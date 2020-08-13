@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CommandoAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,6 +44,26 @@ namespace CommandoAPI.Controllers
             } else
             {
                 return Ok(commandItem);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Post(CommandItem commandItem)
+        {
+            var existingCommandItem = CommandItems.Find(item =>
+                item.Command == commandItem.Command
+            );
+
+            if (existingCommandItem != null)
+            {
+                return Conflict("Command already exists");
+            }
+            else
+            {
+                CommandItems.Add(commandItem);
+                var resourceUrl = Path.Combine(Request.Path.ToString(), Uri.EscapeUriString(commandItem.Command));
+                // return an object with 201 Created status code along with the url in the location header and command item in the body
+                return Created(resourceUrl, commandItem);
             }
         }
     }
