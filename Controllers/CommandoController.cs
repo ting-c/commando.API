@@ -66,5 +66,23 @@ namespace CommandoAPI.Controllers
                 return Created(resourceUrl, commandItem);
             }
         }
+
+        [HttpPut]
+        public ActionResult Put(CommandItem commandItem)
+        {
+            var existingCommandItem = CommandItems.Find(item =>
+                item.Command == commandItem.Command
+            );
+
+            if (existingCommandItem == null)
+            {
+                return BadRequest("Cannot find the command, update failed");
+            } else if (commandItem.Description == null)
+            {
+                return BadRequest("Cannot update command without a description");
+            }
+            existingCommandItem.Description = commandItem.Description;
+            return Ok();
+        }
     }
 }
