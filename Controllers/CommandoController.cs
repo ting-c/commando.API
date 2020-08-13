@@ -51,8 +51,7 @@ namespace CommandoAPI.Controllers
         public ActionResult Post(CommandItem commandItem)
         {
             var existingCommandItem = CommandItems.Find(item =>
-                item.Command == commandItem.Command
-            );
+                item.Command == commandItem.Command);
 
             if (existingCommandItem != null)
             {
@@ -71,8 +70,7 @@ namespace CommandoAPI.Controllers
         public ActionResult Put(CommandItem commandItem)
         {
             var existingCommandItem = CommandItems.Find(item =>
-                item.Command == commandItem.Command
-            );
+                item.Command == commandItem.Command);
 
             if (existingCommandItem == null)
             {
@@ -81,8 +79,25 @@ namespace CommandoAPI.Controllers
             {
                 return BadRequest("Cannot update command without a description");
             }
+
             existingCommandItem.Description = commandItem.Description;
             return Ok();
+        }
+
+        [HttpDelete]
+        [Route("{command}")]
+        public ActionResult Delete(string command)
+        {
+            var existingCommandItem = CommandItems.Find(item =>
+                item.Command == command);
+
+            if (existingCommandItem == null)
+            {
+                return NotFound();
+            }
+
+            CommandItems.Remove(existingCommandItem);
+            return NoContent();
         }
     }
 }
