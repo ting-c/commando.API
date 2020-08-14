@@ -41,10 +41,9 @@ namespace CommandoAPI.Controllers
             if (commandItem == null)
             {
                 return NotFound();
-            } else
-            {
-                return Ok(commandItem);
-            }
+            } 
+
+            return Ok(commandItem);
         }
 
         [HttpPost]
@@ -57,13 +56,11 @@ namespace CommandoAPI.Controllers
             {
                 return Conflict("Command already exists");
             }
-            else
-            {
-                CommandItems.Add(commandItem);
-                var resourceUrl = Path.Combine(Request.Path.ToString(), Uri.EscapeUriString(commandItem.Command));
-                // return an object with 201 Created status code along with the url in the location header and command item in the body
-                return Created(resourceUrl, commandItem);
-            }
+
+            CommandItems.Add(commandItem);
+            var resourceUrl = Path.Combine(Request.Path.ToString(), Uri.EscapeUriString(commandItem.Command));
+            // return an object with 201 Created status code along with the url in the location header and command item in the body
+            return Created(resourceUrl, commandItem);
         }
 
         [HttpPut]
@@ -85,11 +82,11 @@ namespace CommandoAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("{command}")]
-        public ActionResult Delete(string command)
+        [Route("{id}")]
+        public ActionResult Delete(Guid id)
         {
             var existingCommandItem = CommandItems.Find(item =>
-                item.Command == command);
+                item.Id == id);
 
             if (existingCommandItem == null)
             {

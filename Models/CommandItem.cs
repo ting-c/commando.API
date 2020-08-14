@@ -3,7 +3,12 @@ namespace CommandoAPI.Models
 {
     public class CommandItem
     {
-        public Guid Id { get; set; }
+        public CommandItem()
+        {
+            Id = Guid.NewGuid();
+        }
+       
+        public Guid Id { get; }
         public string Command { get; set; }
         public string Description { get; set; }
     }
