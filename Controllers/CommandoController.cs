@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using CommandoAPI.Models;
+using CommandoAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommandoAPI.Controllers
@@ -10,32 +12,27 @@ namespace CommandoAPI.Controllers
     [Route("api/[controller]")]
     public class CommandoController : ControllerBase
     {
-        private static List<CommandItem> CommandItems = new List<CommandItem>
-        {
-            new CommandItem
-            {
-                Command = "dotnet run",
-                Description = "build and host app on localhost"
-            },
+        private readonly ICommandItemService _commandItemService;
 
-            new CommandItem
-            {
-                Command = "dotnet watch run",
-                Description = "build and host app on localhost PLUS auto restart aftersave"
-            }
-        };
+        public CommandoController(ICommandItemService commandItemService)
+        {
+            _commandItemService = commandItemService;
+        }
+       
 
         [HttpGet]
-        public ActionResult<List<CommandItem>> Get()
+        public async Task<ActionResult<List<CommandItem>>> Get()
         {
-            return Ok(CommandItems);
+            var commandItems = await _commandItemService.GetCommandItemsAsync();
+            return Ok(commandItems);
         }
 
         [HttpGet]
         [Route("{command}")]
-        public ActionResult<List<CommandItem>> Get(string command)
+        public async Task<ActionResult<List<CommandItem>>> Get(string command)
         {
-            var commandItem = CommandItems.Find(item =>
+            var commandItems = await _commandItemService.GetCommandItemsAsync();
+            var commandItem = commandItems.Find(item =>
                 item.Command.Equals(command));
 
             if (commandItem == null)
@@ -46,33 +43,64 @@ namespace CommandoAPI.Controllers
             return Ok(commandItem);
         }
 
-        [HttpPost]
-        public ActionResult Post(CommandItem commandItem)
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<ActionResult<CommandItem>> Update(Guid id, CommandItem newCommandItem)
         {
-            var existingCommandItem = CommandItems.Find(item =>
+            var commandItems = await _commandItemService.GetCommandItemsAsync();
+            var commandItem = commandItems.Find(item =>
+                item.Id.Equals(id));
+
+            if (commandItem == null)
+            {
+                return NotFound();
+            }
+
+            commandItem.Command = newCommandItem.Command;
+            commandItem.Description = newCommandItem.Description;
+            return Ok(commandItem);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PostAsync(CommandItem commandItem)
+        {
+            var commandItems = await _commandItemService.GetCommandItemsAsync();
+            var existingCommandItem = commandItems.Find(item =>
                 item.Command == commandItem.Command);
 
             if (existingCommandItem != null)
             {
-                return Conflict("Command already exists");
+                return BadRequest("Command already exists");
+            }
+            else if (String.IsNullOrWhiteSpace(commandItem.Command))
+            {
+                return BadRequest("A command item needs a command!");
+            }
+            else if (String.IsNullOrWhiteSpace(commandItem.Description))
+            {
+                return BadRequest("A command item needs a description");
             }
 
-            CommandItems.Add(commandItem);
-            var resourceUrl = Path.Combine(Request.Path.ToString(), Uri.EscapeUriString(commandItem.Command));
-            // return an object with 201 Created status code along with the url in the location header and command item in the body
+            commandItems.Add(commandItem);
+            var resourceUrl = Path.Combine(
+                Request.Path.ToString(),
+                Uri.EscapeUriString(commandItem.Command));
+
             return Created(resourceUrl, commandItem);
         }
 
         [HttpPut]
-        public ActionResult Put(CommandItem commandItem)
+        public async Task<ActionResult> PutAsync(CommandItem commandItem)
         {
-            var existingCommandItem = CommandItems.Find(item =>
+            var commandItems = await _commandItemService.GetCommandItemsAsync();
+            var existingCommandItem = commandItems.Find(item =>
                 item.Command == commandItem.Command);
 
             if (existingCommandItem == null)
             {
                 return BadRequest("Cannot find the command, update failed");
-            } else if (commandItem.Description == null)
+            }
+            else if (String.IsNullOrWhiteSpace(commandItem.Description))
             {
                 return BadRequest("Cannot update command without a description");
             }
@@ -83,9 +111,10 @@ namespace CommandoAPI.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> DeleteAsync(Guid id)
         {
-            var existingCommandItem = CommandItems.Find(item =>
+            var commandItems = await _commandItemService.GetCommandItemsAsync();
+            var existingCommandItem = commandItems.Find(item =>
                 item.Id == id);
 
             if (existingCommandItem == null)
@@ -93,7 +122,7 @@ namespace CommandoAPI.Controllers
                 return NotFound();
             }
 
-            CommandItems.Remove(existingCommandItem);
+            commandItems.Remove(existingCommandItem);
             return NoContent();
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CommandoAPI.Models;
+using CommandoAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -26,13 +27,17 @@ namespace CommandoAPI
             // Allow CORS during development
             services.AddCors(options =>  options.AddPolicy("MyPolicy", builder =>
             {
-                builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
+                builder
+                    .WithOrigins("http://localhost:3000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             }));
 
-            //services.AddDbContext<CommandContext>(opt =>
-            //    opt.UseInMemoryDatabase("Commando"));
+            services.AddDbContext<CommandContext>(opt =>
+                opt.UseInMemoryDatabase("Commando"));
+
+            // use FakeCommandItemService whenever ICommandItemService is requested
+            services.AddSingleton<ICommandItemService, FakeCommandItemService>();
             services.AddControllers();
         }
 
