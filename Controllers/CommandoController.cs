@@ -19,7 +19,6 @@ namespace CommandoAPI.Controllers
             _commandItemService = commandItemService;
         }
        
-
         [HttpGet]
         public async Task<ActionResult<List<CommandItem>>> Get()
         {
@@ -27,29 +26,11 @@ namespace CommandoAPI.Controllers
             return Ok(commandItems);
         }
 
-        [HttpGet]
-        [Route("{command}")]
-        public async Task<ActionResult<List<CommandItem>>> Get(string command)
-        {
-            var commandItems = await _commandItemService.GetCommandItemsAsync();
-            var commandItem = commandItems.Find(item =>
-                item.Command.Equals(command));
-
-            if (commandItem == null)
-            {
-                return NotFound();
-            } 
-
-            return Ok(commandItem);
-        }
-
         [HttpPut]
         [Route("{id}")]
-        public async Task<ActionResult<CommandItem>> Update(Guid id, CommandItem newCommandItem)
+        public async Task<ActionResult> Update(Guid id, CommandItem newCommandItem)
         {
-            var commandItems = await _commandItemService.GetCommandItemsAsync();
-            var commandItem = commandItems.Find(item =>
-                item.Id.Equals(id));
+            var commandItem = await _commandItemService.GetCommandItemByIdAsync(id);
 
             if (commandItem == null)
             {
@@ -58,21 +39,14 @@ namespace CommandoAPI.Controllers
 
             commandItem.Command = newCommandItem.Command;
             commandItem.Description = newCommandItem.Description;
-            return Ok(commandItem);
+
+            return Ok();
         }
 
         [HttpPost]
         public async Task<ActionResult> PostAsync(CommandItem commandItem)
         {
-            var commandItems = await _commandItemService.GetCommandItemsAsync();
-            var existingCommandItem = commandItems.Find(item =>
-                item.Command == commandItem.Command);
-
-            if (existingCommandItem != null)
-            {
-                return BadRequest("Command already exists");
-            }
-            else if (String.IsNullOrWhiteSpace(commandItem.Command))
+            if (String.IsNullOrWhiteSpace(commandItem.Command))
             {
                 return BadRequest("A command item needs a command!");
             }
@@ -81,7 +55,22 @@ namespace CommandoAPI.Controllers
                 return BadRequest("A command item needs a description");
             }
 
-            commandItems.Add(commandItem);
+            var existingCommandItem = await _commandItemService.FindCommandItemAsync(commandItem);
+
+            if (existingCommandItem != null)
+            {
+                return BadRequest("Command already exists");
+            }
+
+            try
+            {
+                await _commandItemService.AddTaskAsync(commandItem);
+            }
+            catch 
+            {
+                return BadRequest("Failed to add item");
+            }
+
             var resourceUrl = Path.Combine(
                 Request.Path.ToString(),
                 Uri.EscapeUriString(commandItem.Command));

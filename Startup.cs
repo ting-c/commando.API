@@ -34,10 +34,14 @@ namespace CommandoAPI
             }));
 
             services.AddDbContext<CommandContext>(opt =>
-                opt.UseInMemoryDatabase("Commando"));
+               opt.UseSqlite(
+                   Configuration.GetConnectionString("DefaultConnection")));
 
             // use FakeCommandItemService whenever ICommandItemService is requested
-            services.AddSingleton<ICommandItemService, FakeCommandItemService>();
+            //services.AddSingleton<ICommandItemService, FakeCommandItemService>();
+
+            // always use the scoped lifecycle for services with EFCore
+            services.AddScoped<ICommandItemService, CommandItemService>();
             services.AddControllers();
         }
 

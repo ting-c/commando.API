@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace CommandoAPI.Models
 {
     public class CommandItem
@@ -7,8 +9,9 @@ namespace CommandoAPI.Models
         {
             Id = Guid.NewGuid();
         }
-       
-        public Guid Id { get; }
+
+        [Key]
+        public Guid Id { get; set; }
         public string Command { get; set; }
         public string Description { get; set; }
     }
