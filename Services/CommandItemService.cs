@@ -24,7 +24,7 @@ namespace CommandoAPI.Services
 
         public async Task<CommandItem> GetCommandItemByIdAsync(Guid id)
         {
-            var item = await _context.CommandItems.FirstOrDefaultAsync();
+            var item = await _context.CommandItems.FirstOrDefaultAsync(item => item.Id == id);
             return item;
         }
 
