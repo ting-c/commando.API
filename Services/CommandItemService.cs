@@ -46,5 +46,11 @@ namespace CommandoAPI.Services
             _context.CommandItems.Add(commandItem);
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeleteTaskAsync(CommandItem commandItem)
+        {
+            _context.CommandItems.Remove(commandItem);
+            await _context.SaveChangesAsync();
+        }
     }
 }

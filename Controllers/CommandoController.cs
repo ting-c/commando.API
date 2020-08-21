@@ -102,17 +102,23 @@ namespace CommandoAPI.Controllers
         [Route("{id}")]
         public async Task<ActionResult> DeleteAsync(Guid id)
         {
-            var commandItems = await _commandItemService.GetCommandItemsAsync();
-            var existingCommandItem = commandItems.Find(item =>
-                item.Id == id);
+            var commandItem = await _commandItemService.GetCommandItemByIdAsync(id);
 
-            if (existingCommandItem == null)
+            if (commandItem == null)
             {
                 return NotFound();
             }
 
-            commandItems.Remove(existingCommandItem);
-            return NoContent();
+            try
+            {
+                await _commandItemService.DeleteTaskAsync(commandItem);
+            }
+            catch
+            {
+                return BadRequest("Failed to delete item");
+            }
+
+            return Ok();
         }
     }
 }
