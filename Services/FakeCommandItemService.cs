@@ -55,5 +55,12 @@ namespace CommandoAPI.Services
             commandItems.Remove(commandItem);
             return Task.CompletedTask;
         }
+
+        public async Task UpdateTaskAsync(Guid id, CommandItem commandItem)
+        {
+            var existingCommandItem = await GetCommandItemByIdAsync(id);
+            existingCommandItem.Command = commandItem.Command;
+            existingCommandItem.Description = commandItem.Description;
+        }
     }
 }

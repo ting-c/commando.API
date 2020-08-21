@@ -12,5 +12,6 @@ namespace CommandoAPI.Services
         Task<CommandItem> FindCommandItemAsync(CommandItem commandItem);
         Task AddTaskAsync(CommandItem commandItem);
         Task DeleteTaskAsync(CommandItem commandItem);
+        Task UpdateTaskAsync(Guid id, CommandItem commandItem);
     }
 }

@@ -26,23 +26,6 @@ namespace CommandoAPI.Controllers
             return Ok(commandItems);
         }
 
-        [HttpPut]
-        [Route("{id}")]
-        public async Task<ActionResult> Update(Guid id, CommandItem newCommandItem)
-        {
-            var commandItem = await _commandItemService.GetCommandItemByIdAsync(id);
-
-            if (commandItem == null)
-            {
-                return NotFound();
-            }
-
-            commandItem.Command = newCommandItem.Command;
-            commandItem.Description = newCommandItem.Description;
-
-            return Ok();
-        }
-
         [HttpPost]
         public async Task<ActionResult> PostAsync(CommandItem commandItem)
         {
@@ -79,22 +62,25 @@ namespace CommandoAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync(CommandItem commandItem)
+        [Route("{id}")]
+        public async Task<ActionResult> PutAsync(Guid id, CommandItem commandItem)
         {
-            var commandItems = await _commandItemService.GetCommandItemsAsync();
-            var existingCommandItem = commandItems.Find(item =>
-                item.Command == commandItem.Command);
+            var existingCommandItem = await _commandItemService.GetCommandItemByIdAsync(id);
 
             if (existingCommandItem == null)
             {
-                return BadRequest("Cannot find the command, update failed");
-            }
-            else if (String.IsNullOrWhiteSpace(commandItem.Description))
-            {
-                return BadRequest("Cannot update command without a description");
+                return NotFound();
             }
 
-            existingCommandItem.Description = commandItem.Description;
+            try
+            {
+                await _commandItemService.UpdateTaskAsync(id, commandItem);
+            }
+            catch
+            {
+                return BadRequest("Failed to update item");
+            }
+
             return Ok();
         }
 
