@@ -20,7 +20,7 @@ namespace CommandoAPI.Controllers
         }
        
         [HttpGet]
-        public async Task<ActionResult<List<CommandItem>>> Get()
+        public async Task<ActionResult<List<CommandItem>>> GetAsync()
         {
             var commandItems = await _commandItemService.GetCommandItemsAsync();
             return Ok(commandItems);
@@ -54,11 +54,7 @@ namespace CommandoAPI.Controllers
                 return BadRequest("Failed to add item");
             }
 
-            var resourceUrl = Path.Combine(
-                Request.Path.ToString(),
-                Uri.EscapeUriString(commandItem.Command));
-
-            return Created(resourceUrl, commandItem);
+            return CreatedAtAction("Add Command Item", commandItem);
         }
 
         [HttpPut]
