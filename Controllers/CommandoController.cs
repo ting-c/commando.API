@@ -23,7 +23,7 @@ namespace CommandoAPI.Controllers
         public async Task<ActionResult<List<CommandItem>>> GetAsync()
         {
             var commandItems = await _commandItemService.GetCommandItemsAsync();
-            return Ok(commandItems);
+            return commandItems;
         }
 
         [HttpPost]
