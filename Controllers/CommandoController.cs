@@ -4,10 +4,12 @@ using System.IO;
 using System.Threading.Tasks;
 using CommandoAPI.Models;
 using CommandoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommandoAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CommandoController : ControllerBase

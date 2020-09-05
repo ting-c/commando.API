@@ -9,9 +9,9 @@ namespace CommandoAPI.Services
 {
     public class CommandItemService : ICommandItemService
     {
-        private readonly CommandContext _context;
+        private readonly CommandoDBContext _context;
 
-        public CommandItemService(CommandContext context)
+        public CommandItemService(CommandoDBContext context)
         {
             _context = context;
         }

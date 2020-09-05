@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommandoAPI.Handlers;
 using CommandoAPI.Models;
 using CommandoAPI.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +35,7 @@ namespace CommandoAPI
                     .AllowAnyHeader();
             }));
 
-            services.AddDbContext<CommandContext>(opt =>
+            services.AddDbContext<CommandoDBContext>(opt =>
                opt.UseSqlite(
                    Configuration.GetConnectionString("DefaultConnection")));
 
@@ -43,6 +45,10 @@ namespace CommandoAPI
             // always use the scoped lifecycle for services with EFCore
             services.AddScoped<ICommandItemService, CommandItemService>();
             services.AddControllers();
+
+            // Name Identifier for BasicAuthenticationHandler
+            services.AddAuthentication("BasicAuthentication")
+                    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
