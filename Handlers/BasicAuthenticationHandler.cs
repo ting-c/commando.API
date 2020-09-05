@@ -46,7 +46,7 @@ namespace CommandoAPI.Handlers
                     .FirstOrDefault();
 
                 if (user == null)
-                    AuthenticateResult.Fail("An error has occured");
+                    AuthenticateResult.Fail("Invalid username or password");
                 else
                 {
                     var claims = new[] { new Claim(ClaimTypes.Name, user.EmailAddress) };
