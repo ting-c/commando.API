@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CommandoAPI.Migrations
 {
-    [DbContext(typeof(CommandContext))]
+    [DbContext(typeof(CommandoDBContext))]
     [Migration("20200818155139_InitialCreate")]
     partial class InitialCreate
     {

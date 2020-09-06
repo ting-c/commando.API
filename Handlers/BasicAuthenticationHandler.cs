@@ -46,14 +46,14 @@ namespace CommandoAPI.Handlers
                     .FirstOrDefault();
 
                 if (user == null)
-                    AuthenticateResult.Fail("Invalid username or password");
+                    return AuthenticateResult.Fail("Invalid username or password");
                 else
                 {
                     var claims = new[] { new Claim(ClaimTypes.Name, user.EmailAddress) };
                     var identity = new ClaimsIdentity(claims, Scheme.Name);
                     var principal = new ClaimsPrincipal(identity);
                     var ticket = new AuthenticationTicket(principal, Scheme.Name);
-                    AuthenticateResult.Success(ticket);
+                    return AuthenticateResult.Success(ticket);
                 }
             }
             catch (Exception)
