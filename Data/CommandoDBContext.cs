@@ -9,6 +9,5 @@ namespace CommandoAPI.Models
         }
 
         public DbSet<CommandItem> CommandItems { get; set; }
-        public DbSet<User> Users { get; set; }
     }
 }

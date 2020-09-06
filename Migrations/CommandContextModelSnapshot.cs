@@ -32,23 +32,6 @@ namespace CommandoAPI.Migrations
 
                     b.ToTable("CommandItems");
                 });
-
-            modelBuilder.Entity("CommandoAPI.Models.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("EmailAddress")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
 #pragma warning restore 612, 618
         }
     }
