@@ -12,7 +12,7 @@ namespace CommandoAPI.Migrations
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
-#pragma warning disable 612, 618
+            #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.7");
 
@@ -32,7 +32,7 @@ namespace CommandoAPI.Migrations
 
                     b.ToTable("CommandItems");
                 });
-#pragma warning restore 612, 618
+            #pragma warning restore 612, 618
         }
     }
 }
